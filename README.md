@@ -1,0 +1,2 @@
+# hatena_blog_backup_mysql
+はてなブログのデータをAPIを使って取得してMySQLに保存します。
