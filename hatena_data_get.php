@@ -58,7 +58,33 @@ class HatenaDataGet {
 
     /// 取得したデータを分解して配列に格納
     public function setXmlToArray($xml_data) {
+        $temp_arr = array();
+        $preg_pattern = '/<hatena:formatted-content type=\"text\/html\" xmlns:hatena=\"http:\/\/www\.hatena\.ne\.jp\/info\/xmlns#\">(.*?)<\/hatena:formatted-content>/s';
+        $xml = new SimpleXMLElement($xml_data);
+        preg_match_all($preg_pattern, $xml_data, $preg_temp_arr);
+        var_dump($preg_temp_arr);
+        $key = 0;
+        foreach($xml->entry as $loop) {
+            //print_r($loop);
+            $temp_arr[$key]['id'] =  (string)$loop->id;
+            $temp_arr[$key]['author'] = (string)$loop->author->name;
+            $temp_arr[$key]['atomurl'] = (string)$this->getLinkHref($loop->link, 'edit');
+            $temp_arr[$key]['url'] = (string)$this->getLinkHref($loop->link, 'alternate');
+            $temp_arr[$key]['title'] = (string)$loop->title;
+            $temp_arr[$key]['content'] = (string)$loop->content;
+            $temp_arr[$key]['formatContent'] = $preg_temp_arr[1][$key];
+            $temp_arr[$key]['published'] = (string)$loop->published;
+            $temp_arr[$key]['updated'] = (string)$loop->updated;
+            $temp_arr[$key]['summary'] = (string)$loop->summary;
+            $categories = [];
+            foreach($loop->category as $n=>$tag){
+                $categories[] = (string)$tag['term'];
+            }
+            $temp_arr[$key]['category'] = $categories;
+            $key++;
+        }
 
+        return $temp_arr;
     }
 
     /// 次のページのURLを取得して返す
@@ -84,4 +110,5 @@ $obj = new HatenaDataGet();
 $result = $obj->getBlogData("https://blog.hatena.ne.jp/" . USERNAME . "/" . BLOGID . "/atom/entry");
 $next_url = $obj->getNextPageUrl($result);
 $result2 = $obj->getBlogData($next_url);
-print_r($result2);
+$temp_arr = $obj->setXmlToArray($result2);
+var_dump($temp_arr);
