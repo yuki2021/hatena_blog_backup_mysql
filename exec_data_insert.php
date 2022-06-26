@@ -31,7 +31,6 @@ function all_get_hatena_data() {
             break;
         }
         foreach($temp_arr as $loop) {
-            print_r($loop);
             $setDataObj->insertHatenaData($loop);
         }
         sleep(1);
@@ -42,4 +41,17 @@ function all_get_hatena_data() {
 function update_hatena_data() {
     $getDataObj = new HatenaDataGet();
     $setDataObj = new AddDataMysql();
+    while(true) {
+        $temp_arr = $getDataObj->getData();
+        if($temp_arr == null || count($temp_arr) == 0) {
+            break;
+        }
+        foreach($temp_arr as $loop) {
+            if($setDataObj->checkExistData($loop)) {
+                $setDataObj->insertHatenaData($loop);
+            } else {
+                break(2);
+            }
+        }
+    }
 }

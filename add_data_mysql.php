@@ -32,5 +32,19 @@ class AddDataMysql {
     public function clearDB() {
         $this->db->table('hatena_blog_data')->truncate();   
     }
+
+    /// データベースに渡された配列の値が存在するか確認する
+    public function checkExistData($temp_arr) {
+        $count = $this->db->table('hatena_blog_data')->select([
+            'field' => ['*'],
+            'condition' => 'WHERE blog_id = "'. $temp_arr['blog_id'] .'"',
+        ])->total();
+        print_r($count);
+        if($count == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
