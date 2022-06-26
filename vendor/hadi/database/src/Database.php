@@ -32,10 +32,9 @@ class Database
         }
 
         try {
-            $dsn = "mysql:host=" . $config['host'] . ";dbname=" . $config['name'];
+            $dsn = "mysql:host=" . $config['host'] . ";dbname=" . $config['name'] .";charset=utf8mb4";
             $opt = array(
-                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-                \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'"
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
             );
 
             $this->pdo = new \PDO($dsn, $config['username'], $config['password'], $opt);
@@ -427,4 +426,23 @@ class Database
         ];
     }
 
+    /**
+     *  truncate
+     */
+    public function truncate()
+    {
+        $tableName = $this->tableName;
+
+        $qryStr = 'TRUNCATE TABLE '.$tableName;
+
+        try {
+            // query
+            $qry = $this->pdo->prepare($qryStr);
+            $qry->execute();
+        }
+        catch (PDOException $ex){
+            echo $this->dbErrorMsg . $ex->getMessage();
+            exit();
+        }
+    }
 }
